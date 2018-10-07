@@ -1,0 +1,50 @@
+version: '3'
+services: 
+  postgres: 
+    image: 'postgres:latest'
+  redis: 
+    image: 'redis:latest'
+  nginx:
+    restart: always
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./nginx
+    ports:
+      - '3050:80'
+  api:
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./server
+    volumes: 
+      - /app/node_modules
+      # take everything from app and connect it w/ server
+      - ./server:/app
+    environment: 
+      # notice the two different ways to use env var
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - PGUSER=postgres
+      - PGHOST=postgres
+      - PGDATABASE=postgres
+      - PGPASSWORD=postgres_password
+      - PGPORT=5432
+  client: 
+    build: 
+      dockerfile: Dockerfile.dev
+      context: ./client
+    volumes:
+      # don't grab node modules
+      - /app/node_modules
+      # set the relations btwn client and container
+      # app comes from workdir
+      - ./client:/app
+  worker: 
+    build:
+      dockerfile: Dockerfile.dev
+      context: ./worker
+    volumes:
+      - /app/node_modules
+      - ./worker:/app
+    environment:
+      - REDIS_HOST=redis
+      - REDIS_PORT-6379
