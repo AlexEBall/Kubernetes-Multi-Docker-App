@@ -8,7 +8,7 @@ spec:
     matchLabels:
       component: web
   template:
-    metadate:
+    metadata:
       labels:
         component: web
     spec:
