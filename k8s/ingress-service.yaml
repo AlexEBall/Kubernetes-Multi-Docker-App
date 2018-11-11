@@ -14,7 +14,7 @@ spec:
         - www.k8s-multi-docker.com
       secretName: k8s-multi-docker-com
   rules:
-    - host: k8s-multi-docker-com
+    - host: k8s-multi-docker.com
       http:
         paths: 
           - path: /
@@ -25,7 +25,7 @@ spec:
             backend:
               serviceName: server-cluster-ip-service
               servicePort: 5000
-    - host: www.k8s-multi-docker-com
+    - host: www.k8s-multi-docker.com
       http:
         paths: 
           - path: /
