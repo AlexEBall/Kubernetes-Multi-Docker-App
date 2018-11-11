@@ -16,7 +16,7 @@ before_install:
   - gcloud auth activate-service-account --key-file service-account.json 
   - gcloud config set project k8s-multi-docker-app
   - gcloud config set compute/zone us-west2-a
-  - cloud container clusters get-credentials multi-docker-cluster
+  - gcloud container clusters get-credentials multi-docker-cluster
   # login into docker cli
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
   # build multi docker test
