@@ -1,0 +1,36 @@
+sudo: required
+services:
+  - docker
+# create unique tags for image in deploy script using git sha
+env:
+  global:
+    - SHA=$ (git rev-parse HEAD)
+    # make sure gcloud doesn't prompt with text during build
+    - CLOUD_SDK_DISABLE_PROMPTS=1
+before_install:
+  # encrypted json from travis cli
+  - openssl aes-256-cbc -K $encrypted_0c35eebf403c_key -iv $encrypted_0c35eebf403c_iv -in service-account.json.enc -out service-account.json -d
+  # install of google cloud sdk and commands to make it work
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  - gcloud components update kubectl
+  - gcloud auth activate-service-account --key-file service-account.json 
+  - gcloud config set project k8s-multi-docker-app
+  - gcloud config set compute /zone us-west2-a
+  - cloud container clusters get-credentials multi-docker-cluster
+  # login into docker cli
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  # build multi docker test
+  - docker build -t alexeball/react-test -f ./client/Dockerfile.dev ./client
+
+script: 
+  # run the test image we just built
+  - docker run alexeball/react npm test -- --coverage
+
+deploy:
+  # using own custom script to build docker images with k8s applied
+  # travis doesn't have a built in provider for k8s
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: master
