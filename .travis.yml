@@ -24,7 +24,7 @@ before_install:
 
 script: 
   # run the test image we just built
-  - docker run alexeball/react npm test -- --coverage
+  - docker run alexeball/react-test npm test -- --coverage
 
 deploy:
   # using own custom script to build docker images with k8s applied
